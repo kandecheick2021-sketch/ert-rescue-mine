@@ -1,0 +1,1452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
+<meta name="theme-color" content="#09544D">
+<title>ERT Rescue Mine — Formulaires Terrain</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#F2F3F4;color:#1C2833;min-height:100vh;}
+.topbar{background:linear-gradient(135deg,#09544D,#0A6B63);padding:0 18px;display:flex;align-items:center;gap:12px;height:64px;position:sticky;top:0;z-index:50;box-shadow:0 3px 14px rgba(9,84,77,.4);}
+.logo{width:44px;height:44px;border-radius:9px;object-fit:cover;border:2px solid #8FA040;flex-shrink:0;}
+.hd-name{font-size:1rem;font-weight:700;color:#C0D069;letter-spacing:1.5px;text-transform:uppercase;line-height:1.1;}
+.hd-sub{font-size:.62rem;color:rgba(255,255,255,.55);letter-spacing:1px;margin-top:2px;}
+.hd-badge{background:rgba(192,208,105,.2);border:1px solid #8FA040;color:#C0D069;padding:4px 12px;border-radius:12px;font-size:.68rem;font-weight:700;letter-spacing:2px;margin-left:auto;white-space:nowrap;}
+
+/* LANDING */
+#landing{padding:16px;max-width:640px;margin:0 auto;}
+.landing-title{font-size:1.05rem;font-weight:700;color:#09544D;letter-spacing:1px;text-align:center;margin:10px 0 4px;}
+.landing-sub{font-size:.78rem;color:#666;text-align:center;margin-bottom:18px;}
+.form-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-card{background:#fff;border:2px solid #C5C8CA;border-radius:14px;padding:20px 14px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.form-card:hover{border-color:#09544D;transform:translateY(-2px);box-shadow:0 6px 20px rgba(9,84,77,.15);}
+.form-card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;}
+.fc-icon{font-size:2.2rem;margin-bottom:8px;}
+.fc-title{font-size:.88rem;font-weight:700;color:#1C2833;}
+.fc-sub{font-size:.7rem;color:#888;margin-top:3px;line-height:1.4;}
+.fc-badge{display:inline-block;color:#fff;font-size:.65rem;font-weight:700;padding:2px 8px;border-radius:8px;margin-top:6px;letter-spacing:1px;}
+
+/* FORM PAGE */
+#form-page{display:none;padding:16px;max-width:680px;margin:0 auto;}
+.form-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.back-btn{background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:8px;padding:7px 14px;font-size:.82rem;font-weight:600;cursor:pointer;color:#09544D;}
+.form-badge{font-size:.82rem;font-weight:700;color:#fff;padding:5px 14px;border-radius:20px;letter-spacing:2px;}
+
+/* CARDS */
+.card{background:#fff;border:1px solid #C5C8CA;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 2px 8px rgba(9,84,77,.05);}
+.card-title{font-size:.75rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#09544D;margin-bottom:13px;padding-bottom:8px;border-bottom:2px solid #C0D069;}
+.section-label{background:linear-gradient(135deg,#09544D,#0A6B63);color:#C0D069;font-size:.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 12px;border-radius:7px;margin-bottom:10px;display:inline-block;}
+
+/* FIELDS */
+label{display:block;font-size:.68rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:#555;margin-bottom:4px;}
+input,select,textarea{width:100%;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:9px;color:#1C2833;padding:12px 14px;font-size:.95rem;outline:none;margin-bottom:12px;-webkit-appearance:none;transition:border-color .2s;}
+input:focus,select:focus,textarea:focus{border-color:#09544D;background:#fff;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%23555'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;}
+textarea{resize:vertical;line-height:1.75;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.req{color:#C0392B;}
+.ctr{font-size:.68rem;color:#888;text-align:right;margin-top:-9px;margin-bottom:10px;}
+.ctr.ok{color:#1E8449;font-weight:600;}
+.ctr.warn{color:#D68910;font-weight:600;}
+
+/* ALERT BTNS */
+.alert-btns{display:flex;gap:8px;margin-bottom:12px;}
+.alert-btn{flex:1;padding:11px 4px;border:2px solid #C5C8CA;border-radius:9px;text-align:center;cursor:pointer;font-size:.8rem;font-weight:700;background:#F2F3F4;transition:all .2s;}
+.alert-btn.sel-normal{border-color:#1E8449;background:rgba(30,132,73,.1);color:#1E8449;}
+.alert-btn.sel-precaution{border-color:#D68910;background:rgba(214,137,16,.1);color:#D68910;}
+.alert-btn.sel-urgence{border-color:#C0392B;background:rgba(192,57,43,.1);color:#C0392B;}
+
+/* STATUS RADIO */
+.status-group{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;}
+.status-opt{display:flex;align-items:center;gap:5px;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:.83rem;transition:all .2s;user-select:none;}
+.status-opt input[type=radio]{width:14px;height:14px;margin:0;padding:0;accent-color:#09544D;cursor:pointer;}
+.status-opt.selected{border-color:#09544D;background:rgba(9,84,77,.08);font-weight:600;color:#09544D;}
+
+/* TABLE ROWS */
+.trow{display:grid;gap:5px;margin-bottom:5px;align-items:center;}
+.trow input,.trow select{margin-bottom:0;padding:9px 8px;font-size:.82rem;}
+.tnum{font-size:.78rem;font-weight:700;color:#09544D;text-align:center;padding-top:4px;}
+.thead span{font-size:.58rem;font-weight:700;color:#09544D;text-transform:uppercase;letter-spacing:.5px;}
+
+/* SUBMIT */
+.btn-sub{width:100%;border:none;border-radius:12px;padding:16px;font-size:1rem;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(0,0,0,.18);color:#fff;}
+.btn-sub:active{transform:scale(.98);}
+.btn-sub:disabled{background:#aaa !important;cursor:not-allowed;box-shadow:none;}
+.spinner{display:inline-block;width:15px;height:15px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.err{background:rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.3);border-radius:9px;padding:10px 14px;color:#C0392B;font-size:.82rem;margin-bottom:10px;display:none;}
+
+/* SUCCESS */
+#success{display:none;text-align:center;padding:44px 20px;max-width:640px;margin:0 auto;}
+.s-ico{font-size:5rem;margin-bottom:12px;}
+.s-ttl{font-size:1.5rem;font-weight:700;color:#09544D;margin-bottom:6px;}
+.s-sub{font-size:.88rem;color:#555;line-height:1.7;margin-bottom:18px;}
+.s-ref{font-family:monospace;background:#F2F3F4;border:1px solid #C5C8CA;border-radius:8px;padding:8px 16px;font-size:.85rem;color:#09544D;font-weight:700;display:inline-block;margin-bottom:18px;}
+.btn-home{background:#F2F3F4;border:1.5px solid #09544D;border-radius:10px;padding:12px 24px;font-size:.9rem;font-weight:600;cursor:pointer;color:#09544D;}
+
+.offline-bar{background:#D68910;color:#fff;text-align:center;padding:7px;font-size:.78rem;font-weight:600;display:none;}
+footer{text-align:center;padding:14px;background:#09544D;color:rgba(255,255,255,.45);font-size:.68rem;margin-top:20px;}
+footer strong{color:#C0D069;}
+@media(max-width:400px){.g2,.g3{grid-template-columns:1fr;}.alert-btns{flex-direction:column;}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+<div class="offline-bar" id="offline-bar">&#9888;&#65039; Hors ligne</div>
+
+<div class="topbar">
+  <img src="data:image/jpeg;base64,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" class="logo" alt="ERT">
+  <div>
+    <div class="hd-name">&#128680; ERT Rescue Mine</div>
+    <div class="hd-sub">Formulaires de Terrain</div>
+  </div>
+  <div class="hd-badge" id="top-badge">FORMULAIRES</div>
+</div>
+
+<!-- ===================== LANDING ===================== -->
+<div id="landing">
+  <div style="height:12px;"></div>
+  <div class="landing-title">Choisissez votre formulaire</div>
+  <div class="landing-sub">Sélectionnez le type de rapport à soumettre</div>
+  <div class="form-cards">
+
+    <div class="form-card" style="border-color:#1F618D;" onclick="openForm('AIRSTRIP')">
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1F618D,#5DADE2);"></div>
+      <div class="fc-icon">&#9992;&#65039;</div>
+      <div class="fc-title">Airstrip Report</div>
+      <div class="fc-sub">Mouvements aéronefs<br>ERT Aéroport</div>
+      <div class="fc-badge" style="background:#1F618D;">AIRSTRIP</div>
+    </div>
+
+    <div class="form-card" style="border-color:#8E44AD;" onclick="openForm('RPT')">
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#8E44AD,#BB8FCE);"></div>
+      <div class="fc-icon">&#128203;</div>
+      <div class="fc-title">Rapport Activité</div>
+      <div class="fc-sub">Compte rendu d'activité<br>Weekly / Daily report</div>
+      <div class="fc-badge" style="background:#8E44AD;">RAPPORT</div>
+    </div>
+
+    <div class="form-card" style="border-color:#C0392B;" onclick="openForm('EXT')">
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#922B21,#E74C3C);"></div>
+      <div class="fc-icon">&#129519;</div>
+      <div class="fc-title">Rapport Extincteur</div>
+      <div class="fc-sub">Inspection extincteurs<br>Controle periodique</div>
+      <div class="fc-badge" style="background:#C0392B;">EXTINCTEUR</div>
+    </div>
+
+    <div class="form-card" style="border-color:#27AE60;" onclick="openForm('KIT')">
+      <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#1E8449,#27AE60);"></div>
+      <div class="fc-icon">&#129657;</div>
+      <div class="fc-title">Kit de Secours</div>
+      <div class="fc-sub">Inspection kit secours<br>Trousse premiers soins</div>
+      <div class="fc-badge" style="background:#27AE60;">KIT</div>
+    </div>
+
+  </div>
+</div>>
+
+<!-- ===================== FORM PAGE ===================== -->
+<div id="form-page">
+  <div class="form-header">
+    <button class="back-btn" onclick="goBack()">&#8592; Retour</button>
+    <span class="form-badge" id="form-badge-lbl">AIRSTRIP</span>
+    <span id="form-title-txt" style="font-size:.88rem;font-weight:700;color:#09544D;"></span>
+  </div>
+  <div id="form-dynamic"></div>
+  <div class="err" id="f-err"></div>
+  <div style="display:flex;gap:8px;margin-bottom:10px;">
+    <button class="btn-sub" id="btn-pdf-fr" style="background:linear-gradient(135deg,#145A32,#1E8449);flex:1;padding:12px 8px;font-size:.82rem;" onclick="exportFormPDF('fr')">&#128196; PDF Français</button>
+    <button class="btn-sub" id="btn-pdf-en" style="background:linear-gradient(135deg,#1A5276,#2E86C1);flex:1;padding:12px 8px;font-size:.82rem;" onclick="exportFormPDF('en')">&#128196; PDF English</button>
+  </div>
+  <button class="btn-sub" id="btn-sub">&#128228; Soumettre le rapport</button>
+  <p style="font-size:.7rem;color:#888;text-align:center;margin-top:8px;margin-bottom:20px;line-height:1.5;">
+    Soumis directement au Superviseur ERT en temps réel.
+  </p>
+</div>
+
+<!-- ===================== SUCCESS ===================== -->
+<div id="success">
+  <div class="s-ico" id="s-ico">&#9989;</div>
+  <div class="s-ttl" id="s-ttl">Formulaire soumis !</div>
+  <div class="s-sub" id="s-sub">Transmis avec succès au Superviseur ERT.</div>
+  <div class="s-ref" id="s-ref">REF: —</div><br>
+  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;">
+    <button class="btn-home" style="background:linear-gradient(135deg,#145A32,#1E8449);color:#fff;border:none;" id="btn-success-pdf-fr" onclick="exportFormPDF('fr')">&#128196; PDF Français</button>
+    <button class="btn-home" style="background:linear-gradient(135deg,#1A5276,#2E86C1);color:#fff;border:none;" id="btn-success-pdf-en" onclick="exportFormPDF('en')">&#128196; PDF English</button>
+  </div>
+  <button class="btn-home" onclick="goHome()">&#127968; Retour accueil</button>
+</div>
+
+<footer><strong>ERT Rescue Mine</strong> | Superviseur KCM | Confidentiel</footer>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getDatabase, ref, push } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+window._fbReady = false;
+try{
+  const app = initializeApp({
+    apiKey:"AIzaSyDt-zBwMTgBKvYgLcJMUfZQcYtYmh_vZkU",
+    authDomain:"ert-rescue-mine.firebaseapp.com",
+    databaseURL:"https://ert-rescue-mine-default-rtdb.firebaseio.com",
+    projectId:"ert-rescue-mine",
+    storageBucket:"ert-rescue-mine.firebasestorage.app",
+    messagingSenderId:"263775800172",
+    appId:"1:263775800172:web:08cc3b6a667fb52abfc149"
+  });
+  const db = getDatabase(app);
+  window._fbReady = true;
+  window._fbPush  = (data) => push(ref(db,'ert_rapports'), data);
+  document.getElementById('offline-bar').style.display = 'none';
+} catch(e){ console.warn('Firebase:', e.message); }
+</script>
+
+<script>
+var currentForm = null;
+var alertVal    = '';
+var actStatus   = '';
+
+// ── ALERT LEVEL ───────────────────────────────
+function setAlert(val){
+  alertVal = val;
+  ['normal','precaution','urgence'].forEach(function(k){
+    var b = document.getElementById('btn-alert-'+k);
+    if(b) b.className = 'alert-btn' + (val.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'') === k ? ' sel-'+k : '');
+  });
+}
+
+// ── ACTIVITY STATUS ───────────────────────────
+function setActStatus(val){
+  actStatus = val;
+  document.querySelectorAll('.status-opt').forEach(function(el){
+    var inp = el.querySelector('input[type=radio]');
+    if(inp){
+      var sel = inp.value === val;
+      el.classList.toggle('selected', sel);
+      inp.checked = sel;
+    }
+  });
+}
+
+// ── WORD COUNTER ──────────────────────────────
+function initCounter(textareaId, counterId, maxWords){
+  var ta  = document.getElementById(textareaId);
+  var ctr = document.getElementById(counterId);
+  if(!ta || !ctr) return;
+  ta.addEventListener('input', function(){
+    var words = this.value.trim() ? this.value.trim().split(/\s+/).length : 0;
+    var chars = this.value.length;
+    ctr.textContent = words + ' mots / ' + maxWords + ' max — ' + chars + ' caractères';
+    ctr.className   = 'ctr' + (words >= maxWords ? ' warn' : words >= 10 ? ' ok' : '');
+  });
+}
+
+// ── FORM HTML ─────────────────────────────────
+var AIRSTRIP_HTML = `
+<div class="card">
+  <div class="card-title">Informations Generales</div>
+  <div class="g2">
+    <div><label>N Rapport</label><input type="text" id="f-num" placeholder="ERT-AIR-001"></div>
+    <div><label>Date *</label><input type="date" id="f-date"></div>
+  </div>
+  <div class="g2">
+    <div><label>Site / Aerodrome *</label><input type="text" id="f-site" placeholder="KGP Airstrip"></div>
+    <div><label>Superviseur ERT *</label><input type="text" id="f-sup" placeholder="Nom du superviseur"></div>
+  </div>
+  <div><label>Type intervention *</label>
+    <select id="f-type">
+      <option value="">-- Selectionner --</option>
+      <option>Arrivee / Depart aeronef</option>
+      <option>Alerte incendie aeronef</option>
+      <option>Evacuation medicale</option>
+      <option>Incident de piste</option>
+      <option>Exercice / Drill</option>
+      <option>Autre</option>
+    </select>
+  </div>
+</div>
+<div class="card">
+  <div class="card-title">Mouvements Aeronefs</div>
+  <div class="section-label">Arrivee</div>
+  <div class="g3">
+    <div><label>Immatriculation</label><input type="text" id="f-arr-immat" placeholder="TU-GFU"></div>
+    <div><label>Trajet</label><input type="text" id="f-arr-trajet" placeholder="ABJ - KANI"></div>
+    <div><label>Heure arrivee</label><input type="time" id="f-arr-heure"></div>
+  </div>
+  <div class="g3">
+    <div><label>Equipage</label><input type="number" id="f-arr-equip" min="0" placeholder="0"></div>
+    <div><label>Nbre passagers</label><input type="number" id="f-arr-pax" min="0" placeholder="0"></div>
+    <div><label>Total a bord</label><input type="number" id="f-arr-total" min="0" placeholder="0"></div>
+  </div>
+  <div><label>Observations arrivee</label><textarea id="f-arr-obs" rows="2" placeholder="Observations..."></textarea></div>
+  <div class="section-label" style="margin-top:6px;">Depart</div>
+  <div class="g3">
+    <div><label>Immatriculation</label><input type="text" id="f-dep-immat" placeholder="TU-GFU"></div>
+    <div><label>Trajet</label><input type="text" id="f-dep-trajet" placeholder="KANI - ABJ"></div>
+    <div><label>Heure depart</label><input type="time" id="f-dep-heure"></div>
+  </div>
+  <div class="g3">
+    <div><label>Equipage</label><input type="number" id="f-dep-equip" min="0" placeholder="0"></div>
+    <div><label>Nbre passagers</label><input type="number" id="f-dep-pax" min="0" placeholder="0"></div>
+    <div><label>Total a bord</label><input type="number" id="f-dep-total" min="0" placeholder="0"></div>
+  </div>
+  <div><label>Observations depart</label><textarea id="f-dep-obs" rows="2" placeholder="Observations..."></textarea></div>
+</div>
+<div class="card">
+  <div class="card-title">Identite des Passagers</div>
+  <div style="display:grid;grid-template-columns:.25fr 2fr 1fr;gap:5px;margin-bottom:6px;">
+    <span style="font-size:.6rem;font-weight:700;color:#09544D;text-transform:uppercase;">#</span>
+    <span style="font-size:.6rem;font-weight:700;color:#09544D;text-transform:uppercase;">Nom et Prenom</span>
+    <span style="font-size:.6rem;font-weight:700;color:#09544D;text-transform:uppercase;">Statut</span>
+  </div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">1</span><input type="text" id="pax-nom-1" placeholder="Nom complet" style="margin-bottom:0;padding:9px 10px;font-size:.83rem;"><select id="pax-stat-1" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><option value="">-</option><option>Arrivee</option><option>Depart</option><option>Transit</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">2</span><input type="text" id="pax-nom-2" placeholder="Nom complet" style="margin-bottom:0;padding:9px 10px;font-size:.83rem;"><select id="pax-stat-2" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><option value="">-</option><option>Arrivee</option><option>Depart</option><option>Transit</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">3</span><input type="text" id="pax-nom-3" placeholder="Nom complet" style="margin-bottom:0;padding:9px 10px;font-size:.83rem;"><select id="pax-stat-3" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><option value="">-</option><option>Arrivee</option><option>Depart</option><option>Transit</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">4</span><input type="text" id="pax-nom-4" placeholder="Nom complet" style="margin-bottom:0;padding:9px 10px;font-size:.83rem;"><select id="pax-stat-4" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><option value="">-</option><option>Arrivee</option><option>Depart</option><option>Transit</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">5</span><input type="text" id="pax-nom-5" placeholder="Nom complet" style="margin-bottom:0;padding:9px 10px;font-size:.83rem;"><select id="pax-stat-5" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><option value="">-</option><option>Arrivee</option><option>Depart</option><option>Transit</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">6</span><input type="text" id="pax-nom-6" placeholder="Nom complet" style="margin-bottom:0;padding:9px 10px;font-size:.83rem;"><select id="pax-stat-6" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><option value="">-</option><option>Arrivee</option><option>Depart</option><option>Transit</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">7</span><input type="text" id="pax-nom-7" placeholder="Nom complet" style="margin-bottom:0;padding:9px 10px;font-size:.83rem;"><select id="pax-stat-7" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><option value="">-</option><option>Arrivee</option><option>Depart</option><option>Transit</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">8</span><input type="text" id="pax-nom-8" placeholder="Nom complet" style="margin-bottom:0;padding:9px 10px;font-size:.83rem;"><select id="pax-stat-8" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><option value="">-</option><option>Arrivee</option><option>Depart</option><option>Transit</option></select></div>
+</div>
+<div class="card">
+  <div class="card-title">Equipe ERT - Agents Intervenants</div>
+  <div style="display:grid;grid-template-columns:.25fr 2fr 1.2fr 1fr 1fr;gap:5px;margin-bottom:6px;">
+    <span style="font-size:.6rem;font-weight:700;color:#09544D;">#</span>
+    <span style="font-size:.6rem;font-weight:700;color:#09544D;">Nom et Prenom</span>
+    <span style="font-size:.6rem;font-weight:700;color:#09544D;">Grade/Fonction</span>
+    <span style="font-size:.6rem;font-weight:700;color:#09544D;">H.Arrivee</span>
+    <span style="font-size:.6rem;font-weight:700;color:#09544D;">H.Depart</span>
+  </div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1.2fr 1fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">1</span><input type="text" id="ert-nom-1" placeholder="Nom complet" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="text" id="ert-grade-1" placeholder="Grade/Fonction" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="time" id="ert-arr-1" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"><input type="time" id="ert-dep-1" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1.2fr 1fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">2</span><input type="text" id="ert-nom-2" placeholder="Nom complet" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="text" id="ert-grade-2" placeholder="Grade/Fonction" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="time" id="ert-arr-2" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"><input type="time" id="ert-dep-2" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1.2fr 1fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">3</span><input type="text" id="ert-nom-3" placeholder="Nom complet" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="text" id="ert-grade-3" placeholder="Grade/Fonction" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="time" id="ert-arr-3" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"><input type="time" id="ert-dep-3" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1.2fr 1fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">4</span><input type="text" id="ert-nom-4" placeholder="Nom complet" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="text" id="ert-grade-4" placeholder="Grade/Fonction" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="time" id="ert-arr-4" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"><input type="time" id="ert-dep-4" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1.2fr 1fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">5</span><input type="text" id="ert-nom-5" placeholder="Nom complet" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="text" id="ert-grade-5" placeholder="Grade/Fonction" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="time" id="ert-arr-5" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"><input type="time" id="ert-dep-5" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1.2fr 1fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">6</span><input type="text" id="ert-nom-6" placeholder="Nom complet" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="text" id="ert-grade-6" placeholder="Grade/Fonction" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="time" id="ert-arr-6" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"><input type="time" id="ert-dep-6" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1.2fr 1fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">7</span><input type="text" id="ert-nom-7" placeholder="Nom complet" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="text" id="ert-grade-7" placeholder="Grade/Fonction" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="time" id="ert-arr-7" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"><input type="time" id="ert-dep-7" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1.2fr 1fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">8</span><input type="text" id="ert-nom-8" placeholder="Nom complet" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="text" id="ert-grade-8" placeholder="Grade/Fonction" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="time" id="ert-arr-8" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"><input type="time" id="ert-dep-8" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1.2fr 1fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">9</span><input type="text" id="ert-nom-9" placeholder="Nom complet" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="text" id="ert-grade-9" placeholder="Grade/Fonction" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="time" id="ert-arr-9" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"><input type="time" id="ert-dep-9" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1.2fr 1fr 1fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">10</span><input type="text" id="ert-nom-10" placeholder="Nom complet" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="text" id="ert-grade-10" placeholder="Grade/Fonction" style="margin-bottom:0;padding:9px 8px;font-size:.82rem;"><input type="time" id="ert-arr-10" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"><input type="time" id="ert-dep-10" style="margin-bottom:0;padding:9px 6px;font-size:.82rem;"></div>
+  <div class="g2" style="margin-top:8px;">
+    <div><label>Arrivee sur scene *</label><input type="time" id="f-scene-arr"></div>
+    <div><label>Depart de la scene *</label><input type="time" id="f-scene-dep"></div>
+  </div>
+  <div><label>Duree intervention</label><input type="text" id="f-duree" placeholder="Ex: 0h 47min"></div>
+</div>
+<div class="card">
+  <div class="card-title">Description de la Situation</div>
+  <div><label>Situation / Faits *</label>
+    <textarea id="f-situation" rows="5" placeholder="Decrivez la situation, les faits observes, les actions menees..."></textarea></div>
+  <div><label>Niveau alerte *</label>
+    <div class="alert-btns">
+      <div class="alert-btn" id="btn-alert-normal" data-val="NORMAL" onclick="setAlertBtn(this)">NORMAL</div>
+      <div class="alert-btn" id="btn-alert-precaution" data-val="PRECAUTION" onclick="setAlertBtn(this)">PRECAUTION</div>
+      <div class="alert-btn" id="btn-alert-urgence" data-val="URGENCE" onclick="setAlertBtn(this)">URGENCE</div>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-title">Materiel Utilise / Couverture</div>
+  <div style="display:grid;grid-template-columns:.25fr 2fr 1fr .7fr .7fr 1.3fr;gap:5px;margin-bottom:6px;">
+    <span style="font-size:.58rem;font-weight:700;color:#09544D;">#</span>
+    <span style="font-size:.58rem;font-weight:700;color:#09544D;">Designation</span>
+    <span style="font-size:.58rem;font-weight:700;color:#09544D;">Ref/ID</span>
+    <span style="font-size:.58rem;font-weight:700;color:#09544D;">Qte</span>
+    <span style="font-size:.58rem;font-weight:700;color:#09544D;">Unite</span>
+    <span style="font-size:.58rem;font-weight:700;color:#09544D;">Etat</span>
+  </div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr .7fr .7fr 1.3fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">1</span><input type="text" id="mat-nom-1" placeholder="Designation" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><input type="text" id="mat-ref-1" placeholder="Ref." style="margin-bottom:0;padding:9px 6px;font-size:.8rem;"><input type="number" id="mat-qty-1" placeholder="0" min="0" style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><input type="text" id="mat-unit-1" placeholder="U." style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><select id="mat-etat-1" style="margin-bottom:0;padding:9px 4px;font-size:.76rem;"><option value="">-</option><option>Bon etat</option><option>Utilise</option><option>Endommage</option><option>A remplacer</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr .7fr .7fr 1.3fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">2</span><input type="text" id="mat-nom-2" placeholder="Designation" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><input type="text" id="mat-ref-2" placeholder="Ref." style="margin-bottom:0;padding:9px 6px;font-size:.8rem;"><input type="number" id="mat-qty-2" placeholder="0" min="0" style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><input type="text" id="mat-unit-2" placeholder="U." style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><select id="mat-etat-2" style="margin-bottom:0;padding:9px 4px;font-size:.76rem;"><option value="">-</option><option>Bon etat</option><option>Utilise</option><option>Endommage</option><option>A remplacer</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr .7fr .7fr 1.3fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">3</span><input type="text" id="mat-nom-3" placeholder="Designation" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><input type="text" id="mat-ref-3" placeholder="Ref." style="margin-bottom:0;padding:9px 6px;font-size:.8rem;"><input type="number" id="mat-qty-3" placeholder="0" min="0" style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><input type="text" id="mat-unit-3" placeholder="U." style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><select id="mat-etat-3" style="margin-bottom:0;padding:9px 4px;font-size:.76rem;"><option value="">-</option><option>Bon etat</option><option>Utilise</option><option>Endommage</option><option>A remplacer</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr .7fr .7fr 1.3fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">4</span><input type="text" id="mat-nom-4" placeholder="Designation" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><input type="text" id="mat-ref-4" placeholder="Ref." style="margin-bottom:0;padding:9px 6px;font-size:.8rem;"><input type="number" id="mat-qty-4" placeholder="0" min="0" style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><input type="text" id="mat-unit-4" placeholder="U." style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><select id="mat-etat-4" style="margin-bottom:0;padding:9px 4px;font-size:.76rem;"><option value="">-</option><option>Bon etat</option><option>Utilise</option><option>Endommage</option><option>A remplacer</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr .7fr .7fr 1.3fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">5</span><input type="text" id="mat-nom-5" placeholder="Designation" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><input type="text" id="mat-ref-5" placeholder="Ref." style="margin-bottom:0;padding:9px 6px;font-size:.8rem;"><input type="number" id="mat-qty-5" placeholder="0" min="0" style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><input type="text" id="mat-unit-5" placeholder="U." style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><select id="mat-etat-5" style="margin-bottom:0;padding:9px 4px;font-size:.76rem;"><option value="">-</option><option>Bon etat</option><option>Utilise</option><option>Endommage</option><option>A remplacer</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr .7fr .7fr 1.3fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">6</span><input type="text" id="mat-nom-6" placeholder="Designation" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><input type="text" id="mat-ref-6" placeholder="Ref." style="margin-bottom:0;padding:9px 6px;font-size:.8rem;"><input type="number" id="mat-qty-6" placeholder="0" min="0" style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><input type="text" id="mat-unit-6" placeholder="U." style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><select id="mat-etat-6" style="margin-bottom:0;padding:9px 4px;font-size:.76rem;"><option value="">-</option><option>Bon etat</option><option>Utilise</option><option>Endommage</option><option>A remplacer</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr .7fr .7fr 1.3fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">7</span><input type="text" id="mat-nom-7" placeholder="Designation" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><input type="text" id="mat-ref-7" placeholder="Ref." style="margin-bottom:0;padding:9px 6px;font-size:.8rem;"><input type="number" id="mat-qty-7" placeholder="0" min="0" style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><input type="text" id="mat-unit-7" placeholder="U." style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><select id="mat-etat-7" style="margin-bottom:0;padding:9px 4px;font-size:.76rem;"><option value="">-</option><option>Bon etat</option><option>Utilise</option><option>Endommage</option><option>A remplacer</option></select></div>
+<div style="display:grid;grid-template-columns:.25fr 2fr 1fr .7fr .7fr 1.3fr;gap:5px;margin-bottom:5px;align-items:center;"><span style="font-size:.78rem;font-weight:700;color:#09544D;text-align:center;">8</span><input type="text" id="mat-nom-8" placeholder="Designation" style="margin-bottom:0;padding:9px 8px;font-size:.8rem;"><input type="text" id="mat-ref-8" placeholder="Ref." style="margin-bottom:0;padding:9px 6px;font-size:.8rem;"><input type="number" id="mat-qty-8" placeholder="0" min="0" style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><input type="text" id="mat-unit-8" placeholder="U." style="margin-bottom:0;padding:9px 4px;font-size:.8rem;"><select id="mat-etat-8" style="margin-bottom:0;padding:9px 4px;font-size:.76rem;"><option value="">-</option><option>Bon etat</option><option>Utilise</option><option>Endommage</option><option>A remplacer</option></select></div>
+</div>
+<div class="card">
+  <div class="card-title">📸 Photos terrain <span style="font-size:.68rem;font-weight:400;color:#888;">(optionnel — max 6)</span></div>
+  <div class="photo-zone">
+    <input type="file" id="f-photos" accept="image/*" multiple capture="environment">
+    <div style="font-size:1.8rem;margin-bottom:5px;">📷</div>
+    <div style="font-size:.83rem;color:#555;font-weight:500;">Photographier la scène / l'aéronef</div>
+    <div style="font-size:.68rem;color:#888;margin-top:3px;">Compressées automatiquement</div>
+  </div>
+  <div class="pgrid" id="photo-grid"></div>
+</div>
+`;
+
+var RPT_HTML = `
+<div class="card">
+  <div class="card-title">Identification</div>
+  <div class="g2">
+    <div><label>Nom et Prenom *</label><input type="text" id="r-nom" placeholder="Votre nom complet" autocomplete="name"></div>
+    <div><label>Statut / Poste *</label>
+      <select id="r-statut">
+        <option value="">-- Selectionner --</option>
+        <option>ERT Superviseur</option>
+        <option>ERT Officer</option>
+        <option>Agent ERT</option>
+      </select>
+    </div>
+  </div>
+  <div class="g2">
+    <div><label>Matricule</label><input type="text" id="r-mat" placeholder="ERT-007"></div>
+    <div><label>Zone / Lieu *</label><input type="text" id="r-zone" placeholder="Zone A, Surface..."></div>
+  </div>
+  <div><label>N Activite / Planning</label><input type="text" id="r-numact" placeholder="ACT-2025-042"></div>
+</div>
+<div class="card">
+  <div class="card-title">Activite</div>
+  <div><label>Statut activite *</label>
+    <div class="status-group" id="status-group">
+      <div class="status-opt" data-val="Terminee" onclick="setActStatusBtn(this)"><input type="radio" name="actstatus" value="Terminee"> Terminee</div>
+      <div class="status-opt" data-val="En cours" onclick="setActStatusBtn(this)"><input type="radio" name="actstatus" value="En cours"> En cours</div>
+      <div class="status-opt" data-val="Partielle" onclick="setActStatusBtn(this)"><input type="radio" name="actstatus" value="Partielle"> Partielle</div>
+      <div class="status-opt" data-val="Bloquee" onclick="setActStatusBtn(this)"><input type="radio" name="actstatus" value="Bloquee"> Bloquee</div>
+    </div>
+  </div>
+  <div class="g2">
+    <div><label>Heure debut</label><input type="time" id="r-hdebut"></div>
+    <div><label>Heure fin</label><input type="time" id="r-hfin"></div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-title">Rapport Detaille</div>
+  <label>Compte rendu complet * (max 5000 mots)</label>
+  <textarea id="r-rapport" rows="12" placeholder="Decrivez en detail ce qui a ete fait..."></textarea>
+  <div class="ctr" id="r-rapport-ctr">0 mots / 5000 max</div>
+</div>
+<div class="card">
+  <div class="card-title">Points a ameliorer / Difficultes</div>
+  <label>Obstacles rencontres (max 2000 mots)</label>
+  <textarea id="r-difficultes" rows="6" placeholder="Obstacles, difficultes, suggestions..."></textarea>
+  <div class="ctr" id="r-diff-ctr">0 mots / 2000 max</div>
+</div>
+`;
+
+
+var EXT_HTML = `
+<div class="card">
+  <div class="card-title">👤 Identification Agent</div>
+  <div class="g2">
+    <div><label>Nom & Prénom *</label><input type="text" id="e-nom" placeholder="Votre nom complet" autocomplete="name"></div>
+    <div><label>Matricule *</label><input type="text" id="e-mat" placeholder="ERT-007"></div>
+  </div>
+  <div class="g2">
+    <div><label>Grade / Fonction *</label>
+      <select id="e-grade">
+        <option value="">-- Sélectionner --</option>
+        <option>ERT Superviseur</option><option>ERT Officer</option><option>Agent ERT</option>
+      </select>
+    </div>
+    <div><label>Date inspection *</label><input type="date" id="e-date"></div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-title">📍 Equipement</div>
+  <div class="g2">
+    <div><label>Zone / Emplacement *</label><input type="text" id="e-zone" placeholder="Zone A, Atelier..."></div>
+    <div><label>N° Série / ID</label><input type="text" id="e-serial" placeholder="EXT-001"></div>
+  </div>
+  <div class="g2">
+    <div><label>Type extincteur</label>
+      <select id="e-type">
+        <option value="">-- Sélectionner --</option>
+        <option>Poudre ABC</option><option>CO2</option><option>Eau pulvérisée</option>
+        <option>Mousse AFFF</option><option>Halotron</option>
+      </select>
+    </div>
+    <div><label>Capacité (kg/L)</label><input type="text" id="e-capacite" placeholder="6 kg"></div>
+  </div>
+  <div class="g2">
+    <div><label>Année fabrication</label><input type="number" id="e-fab" min="2000" max="2099" placeholder="2022"></div>
+    <div><label>Prochaine révision (mois)</label><input type="month" id="e-next"></div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-title">✅ Check-list Inspection</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Goupille de sécurité en place</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-ext-c1-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c1','OK',this)">
+      <input type="radio" name="ext-c1" value="OK" style="width:auto;margin:0;padding:0;display:none;"> ✅ OK
+    </label>
+    <label id="lbl-ext-c1-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c1','NON',this)">
+      <input type="radio" name="ext-c1" value="NON" style="width:auto;margin:0;padding:0;display:none;"> ❌ NON
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Manomètre dans la zone verte</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-ext-c2-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c2','OK',this)">
+      <input type="radio" name="ext-c2" value="OK" style="width:auto;margin:0;padding:0;display:none;"> ✅ OK
+    </label>
+    <label id="lbl-ext-c2-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c2','NON',this)">
+      <input type="radio" name="ext-c2" value="NON" style="width:auto;margin:0;padding:0;display:none;"> ❌ NON
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Corps / cylindre sans corrosion ni choc</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-ext-c3-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c3','OK',this)">
+      <input type="radio" name="ext-c3" value="OK" style="width:auto;margin:0;padding:0;display:none;"> ✅ OK
+    </label>
+    <label id="lbl-ext-c3-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c3','NON',this)">
+      <input type="radio" name="ext-c3" value="NON" style="width:auto;margin:0;padding:0;display:none;"> ❌ NON
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Tuyau / lance en bon état</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-ext-c4-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c4','OK',this)">
+      <input type="radio" name="ext-c4" value="OK" style="width:auto;margin:0;padding:0;display:none;"> ✅ OK
+    </label>
+    <label id="lbl-ext-c4-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c4','NON',this)">
+      <input type="radio" name="ext-c4" value="NON" style="width:auto;margin:0;padding:0;display:none;"> ❌ NON
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Étiquette / signalisation visible</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-ext-c5-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c5','OK',this)">
+      <input type="radio" name="ext-c5" value="OK" style="width:auto;margin:0;padding:0;display:none;"> ✅ OK
+    </label>
+    <label id="lbl-ext-c5-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c5','NON',this)">
+      <input type="radio" name="ext-c5" value="NON" style="width:auto;margin:0;padding:0;display:none;"> ❌ NON
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Support de fixation correct</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-ext-c6-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c6','OK',this)">
+      <input type="radio" name="ext-c6" value="OK" style="width:auto;margin:0;padding:0;display:none;"> ✅ OK
+    </label>
+    <label id="lbl-ext-c6-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c6','NON',this)">
+      <input type="radio" name="ext-c6" value="NON" style="width:auto;margin:0;padding:0;display:none;"> ❌ NON
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Accessible (aucun obstacle devant)</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-ext-c7-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c7','OK',this)">
+      <input type="radio" name="ext-c7" value="OK" style="width:auto;margin:0;padding:0;display:none;"> ✅ OK
+    </label>
+    <label id="lbl-ext-c7-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('ext-c7','NON',this)">
+      <input type="radio" name="ext-c7" value="NON" style="width:auto;margin:0;padding:0;display:none;"> ❌ NON
+    </label>
+  </div>
+</div>
+  <div style="margin-top:14px;"><label>Décision finale *</label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div id="dec-conforme"    style="flex:1;min-width:100px;padding:11px;border:2px solid #C5C8CA;border-radius:9px;text-align:center;cursor:pointer;font-size:.85rem;font-weight:700;background:#F2F3F4;color:#555;transition:all .2s;" onclick="setDecision('Conforme',    'dec-conforme',    '#1E8449')">✅ Conforme</div>
+      <div id="dec-surveiller"  style="flex:1;min-width:100px;padding:11px;border:2px solid #C5C8CA;border-radius:9px;text-align:center;cursor:pointer;font-size:.85rem;font-weight:700;background:#F2F3F4;color:#555;transition:all .2s;" onclick="setDecision('A surveiller', 'dec-surveiller',  '#D68910')">⚠️ À surveiller</div>
+      <div id="dec-remplacer"   style="flex:1;min-width:100px;padding:11px;border:2px solid #C5C8CA;border-radius:9px;text-align:center;cursor:pointer;font-size:.85rem;font-weight:700;background:#F2F3F4;color:#555;transition:all .2s;" onclick="setDecision('A remplacer',  'dec-remplacer',   '#C0392B')">❌ À remplacer</div>
+    </div>
+    <input type="hidden" id="e-decision" value="">
+  </div>
+</div>
+<div class="card">
+  <div class="card-title">📝 Remarques & Points à améliorer</div>
+  <label>Remarques générales</label>
+  <textarea id="e-remarques" rows="4" placeholder="État général, anomalies constatées..."></textarea>
+  <div class="ctr" id="e-rem-ctr">0 mots</div>
+  <label>Points à améliorer / Actions correctives</label>
+  <textarea id="e-ameliorer" rows="3" placeholder="Actions correctives recommandées..."></textarea>
+  <div class="ctr" id="e-amel-ctr">0 mots</div>
+</div>
+<div class="card">
+  <div class="card-title">📸 Photos de l'extincteur</div>
+  <div class="photo-zone">
+    <input type="file" id="f-photos" accept="image/*" multiple capture="environment">
+    <div style="font-size:1.8rem;margin-bottom:5px;">📷</div>
+    <div style="font-size:.83rem;color:#555;font-weight:500;">Photographier l'extincteur</div>
+    <div style="font-size:.68rem;color:#888;margin-top:3px;">Plaquette, manomètre, état général...</div>
+  </div>
+  <div class="pgrid" id="photo-grid"></div>
+</div>
+`;
+
+var KIT_HTML = `
+<div class="card">
+  <div class="card-title">👤 Identification Agent</div>
+  <div class="g2">
+    <div><label>Nom & Prénom *</label><input type="text" id="k-nom" placeholder="Votre nom complet" autocomplete="name"></div>
+    <div><label>Matricule *</label><input type="text" id="k-mat" placeholder="ERT-007"></div>
+  </div>
+  <div class="g2">
+    <div><label>Grade / Fonction *</label>
+      <select id="k-grade">
+        <option value="">-- Sélectionner --</option>
+        <option>ERT Superviseur</option><option>ERT Officer</option><option>Agent ERT</option>
+      </select>
+    </div>
+    <div><label>Date inspection *</label><input type="date" id="k-date"></div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-title">📍 Identification Kit</div>
+  <div class="g2">
+    <div><label>Zone / Emplacement *</label><input type="text" id="k-zone" placeholder="Zone A, Véhicule..."></div>
+    <div><label>N° ID / Référence Kit</label><input type="text" id="k-id" placeholder="KIT-001"></div>
+  </div>
+  <div><label>Type de kit</label>
+    <select id="k-type">
+      <option value="">-- Sélectionner --</option>
+      <option>Trousse premiers secours standard</option><option>Kit trauma avancé</option>
+      <option>Kit véhicule</option><option>Kit atelier / chantier</option><option>Kit bureau</option>
+    </select>
+  </div>
+</div>
+<div class="card">
+  <div class="card-title">✅ Contenu du Kit — Check-list</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Pansements assortis (boîte complète)</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-kit-c1-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c1','OK',this)">
+      <input type="radio" name="kit-c1" value="OK" style="display:none;"> ✅ OK
+    </label>
+    <label id="lbl-kit-c1-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c1','NON',this)">
+      <input type="radio" name="kit-c1" value="NON" style="display:none;"> ❌ NON
+    </label>
+    <label id="lbl-kit-c1-vide" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c1','VIDE',this)">
+      <input type="radio" name="kit-c1" value="VIDE" style="display:none;"> ⚠️ Vide
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Compresses stériles</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-kit-c2-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c2','OK',this)">
+      <input type="radio" name="kit-c2" value="OK" style="display:none;"> ✅ OK
+    </label>
+    <label id="lbl-kit-c2-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c2','NON',this)">
+      <input type="radio" name="kit-c2" value="NON" style="display:none;"> ❌ NON
+    </label>
+    <label id="lbl-kit-c2-vide" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c2','VIDE',this)">
+      <input type="radio" name="kit-c2" value="VIDE" style="display:none;"> ⚠️ Vide
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Bandes de gaze / bandages</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-kit-c3-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c3','OK',this)">
+      <input type="radio" name="kit-c3" value="OK" style="display:none;"> ✅ OK
+    </label>
+    <label id="lbl-kit-c3-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c3','NON',this)">
+      <input type="radio" name="kit-c3" value="NON" style="display:none;"> ❌ NON
+    </label>
+    <label id="lbl-kit-c3-vide" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c3','VIDE',this)">
+      <input type="radio" name="kit-c3" value="VIDE" style="display:none;"> ⚠️ Vide
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Antiseptique (flacon)</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-kit-c4-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c4','OK',this)">
+      <input type="radio" name="kit-c4" value="OK" style="display:none;"> ✅ OK
+    </label>
+    <label id="lbl-kit-c4-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c4','NON',this)">
+      <input type="radio" name="kit-c4" value="NON" style="display:none;"> ❌ NON
+    </label>
+    <label id="lbl-kit-c4-vide" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c4','VIDE',this)">
+      <input type="radio" name="kit-c4" value="VIDE" style="display:none;"> ⚠️ Vide
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Gants jetables (paires)</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-kit-c5-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c5','OK',this)">
+      <input type="radio" name="kit-c5" value="OK" style="display:none;"> ✅ OK
+    </label>
+    <label id="lbl-kit-c5-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c5','NON',this)">
+      <input type="radio" name="kit-c5" value="NON" style="display:none;"> ❌ NON
+    </label>
+    <label id="lbl-kit-c5-vide" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c5','VIDE',this)">
+      <input type="radio" name="kit-c5" value="VIDE" style="display:none;"> ⚠️ Vide
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Ciseaux médicaux</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-kit-c6-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c6','OK',this)">
+      <input type="radio" name="kit-c6" value="OK" style="display:none;"> ✅ OK
+    </label>
+    <label id="lbl-kit-c6-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c6','NON',this)">
+      <input type="radio" name="kit-c6" value="NON" style="display:none;"> ❌ NON
+    </label>
+    <label id="lbl-kit-c6-vide" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c6','VIDE',this)">
+      <input type="radio" name="kit-c6" value="VIDE" style="display:none;"> ⚠️ Vide
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Masque de bouche-à-bouche</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-kit-c7-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c7','OK',this)">
+      <input type="radio" name="kit-c7" value="OK" style="display:none;"> ✅ OK
+    </label>
+    <label id="lbl-kit-c7-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c7','NON',this)">
+      <input type="radio" name="kit-c7" value="NON" style="display:none;"> ❌ NON
+    </label>
+    <label id="lbl-kit-c7-vide" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c7','VIDE',this)">
+      <input type="radio" name="kit-c7" value="VIDE" style="display:none;"> ⚠️ Vide
+    </label>
+  </div>
+</div><div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F2F3F4;">
+  <span style="font-size:.88rem;flex:1;padding-right:12px;">Couverture de survie</span>
+  <div style="display:flex;gap:6px;flex-shrink:0;">
+    <label id="lbl-kit-c8-ok" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c8','OK',this)">
+      <input type="radio" name="kit-c8" value="OK" style="display:none;"> ✅ OK
+    </label>
+    <label id="lbl-kit-c8-non" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c8','NON',this)">
+      <input type="radio" name="kit-c8" value="NON" style="display:none;"> ❌ NON
+    </label>
+    <label id="lbl-kit-c8-vide" style="display:flex;align-items:center;gap:4px;font-size:.78rem;background:#F2F3F4;border:1.5px solid #C5C8CA;border-radius:7px;padding:5px 11px;cursor:pointer;text-transform:none;letter-spacing:0;color:#555;transition:all .2s;" onclick="pickCheck('kit-c8','VIDE',this)">
+      <input type="radio" name="kit-c8" value="VIDE" style="display:none;"> ⚠️ Vide
+    </label>
+  </div>
+</div>
+  <div style="margin-top:14px;"><label>Décision finale *</label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div id="dec-complet"       style="flex:1;min-width:100px;padding:11px;border:2px solid #C5C8CA;border-radius:9px;text-align:center;cursor:pointer;font-size:.85rem;font-weight:700;background:#F2F3F4;color:#555;transition:all .2s;" onclick="setDecision('Complet',           'dec-complet',       '#1E8449')">✅ Complet</div>
+      <div id="dec-incomplet"     style="flex:1;min-width:100px;padding:11px;border:2px solid #C5C8CA;border-radius:9px;text-align:center;cursor:pointer;font-size:.85rem;font-weight:700;background:#F2F3F4;color:#555;transition:all .2s;" onclick="setDecision('Incomplet',         'dec-incomplet',     '#D68910')">⚠️ Incomplet</div>
+      <div id="dec-reappro"       style="flex:1;min-width:100px;padding:11px;border:2px solid #C5C8CA;border-radius:9px;text-align:center;cursor:pointer;font-size:.85rem;font-weight:700;background:#F2F3F4;color:#555;transition:all .2s;" onclick="setDecision('A reapprovisionner','dec-reappro',       '#C0392B')">🔄 Réappro.</div>
+    </div>
+    <input type="hidden" id="k-decision" value="">
+  </div>
+</div>
+<div class="card">
+  <div class="card-title">📝 Remarques & Points à améliorer</div>
+  <label>Remarques générales</label>
+  <textarea id="k-remarques" rows="4" placeholder="État général du kit, articles expirés..."></textarea>
+  <div class="ctr" id="k-rem-ctr">0 mots</div>
+  <label>Points à améliorer / Réapprovisionnement</label>
+  <textarea id="k-ameliorer" rows="3" placeholder="Articles à réapprovisionner, délai..."></textarea>
+  <div class="ctr" id="k-amel-ctr">0 mots</div>
+</div>
+<div class="card">
+  <div class="card-title">📸 Photos du Kit</div>
+  <div class="photo-zone">
+    <input type="file" id="f-photos" accept="image/*" multiple capture="environment">
+    <div style="font-size:1.8rem;margin-bottom:5px;">📷</div>
+    <div style="font-size:.83rem;color:#555;font-weight:500;">Photographier le kit de secours</div>
+    <div style="font-size:.68rem;color:#888;margin-top:3px;">Contenu visible, articles manquants...</div>
+  </div>
+  <div class="pgrid" id="photo-grid"></div>
+</div>
+`;
+
+// ── OPEN FORM ─────────────────────────────────
+function openForm(type){
+  currentForm = type;
+  alertVal    = '';
+  actStatus   = '';
+  document.getElementById('landing').style.display    = 'none';
+  document.getElementById('form-page').style.display  = 'block';
+  document.getElementById('success').style.display    = 'none';
+
+  var cfg = {
+    AIRSTRIP:{label:'Airstrip Report',         badge:'AIRSTRIP',   color:'#1F618D', icon:'&#9992;&#65039;'},
+    RPT:     {label:'Rapport Activite',         badge:'RAPPORT',    color:'#8E44AD', icon:'&#128203;'},
+    EXT:     {label:'Rapport Extincteur',       badge:'EXTINCTEUR', color:'#C0392B', icon:'&#129519;'},
+    KIT:     {label:'Kit de Secours',           badge:'KIT',        color:'#27AE60', icon:'&#129657;'}
+  }[type];
+
+  var badge = document.getElementById('form-badge-lbl');
+  badge.textContent = cfg.badge;
+  badge.style.background = cfg.color;
+  document.getElementById('form-title-txt').textContent = cfg.label;
+  document.getElementById('top-badge').textContent = cfg.badge;
+
+  var btn = document.getElementById('btn-sub');
+  btn.style.background = 'linear-gradient(135deg,'+cfg.color+'dd,'+cfg.color+')';
+  btn.innerHTML = cfg.icon + ' Soumettre ' + cfg.badge;
+  btn.disabled = false;
+
+  var btnFR = document.getElementById('btn-pdf-fr');
+  var btnEN = document.getElementById('btn-pdf-en');
+  if(btnFR) btnFR.style.background = 'linear-gradient(135deg,#145A32,#1E8449)';
+  if(btnEN) btnEN.style.background = 'linear-gradient(135deg,#1A5276,#2E86C1)';
+
+  var formMap = {AIRSTRIP:AIRSTRIP_HTML, RPT:RPT_HTML, EXT:EXT_HTML, KIT:KIT_HTML};
+  document.getElementById('form-dynamic').innerHTML = formMap[type] || RPT_HTML;
+
+  // Set date
+  var today = new Date().toISOString().split('T')[0];
+  var fd = document.getElementById('f-date');
+  if(fd) fd.value = today;
+
+  // Restore identity
+  try{
+    var me = JSON.parse(localStorage.getItem('ert_me')||'null');
+    if(me && type === 'AIRSTRIP'){
+      if(me.site && document.getElementById('f-site')) document.getElementById('f-site').value = me.site;
+      if(me.sup  && document.getElementById('f-sup'))  document.getElementById('f-sup').value  = me.sup;
+    }
+    if(me && type === 'RPT'){
+      if(me.nom    && document.getElementById('r-nom'))    document.getElementById('r-nom').value    = me.nom;
+      if(me.statut && document.getElementById('r-statut')) document.getElementById('r-statut').value = me.statut;
+      if(me.mat    && document.getElementById('r-mat'))    document.getElementById('r-mat').value    = me.mat;
+    }
+  }catch(e){}
+
+  if(type === 'RPT'){
+    setTimeout(function(){
+      initCounter('r-rapport',     'r-rapport-ctr', 5000);
+      initCounter('r-difficultes', 'r-diff-ctr',    2000);
+    }, 100);
+  }
+  if(type === 'AIRSTRIP'){
+    setTimeout(function(){
+      function calcDur(){
+        var sa=document.getElementById('f-scene-arr'),sd=document.getElementById('f-scene-dep'),dd=document.getElementById('f-duree');
+        if(!sa||!sd||!dd||!sa.value||!sd.value) return;
+        var a=sa.value.split(':'),b=sd.value.split(':');
+        var m=(parseInt(b[0])*60+parseInt(b[1]))-(parseInt(a[0])*60+parseInt(a[1]));
+        if(m<0) m+=1440;
+        dd.value=Math.floor(m/60)+'h '+('0'+m%60).slice(-2)+'min';
+        dd.style.color='var(--teal)'; dd.style.fontWeight='700';
+      }
+      var sa=document.getElementById('f-scene-arr'),sd=document.getElementById('f-scene-dep');
+      if(sa) sa.addEventListener('change',calcDur);
+      if(sd) sd.addEventListener('change',calcDur);
+    },200);
+  }
+  if(type === 'EXT'){
+    setTimeout(function(){
+      initCounter('e-remarques', 'e-rem-ctr',  2000);
+      initCounter('e-ameliorer', 'e-amel-ctr', 2000);
+    }, 100);
+  }
+  if(type === 'KIT'){
+    setTimeout(function(){
+      initCounter('k-remarques', 'k-rem-ctr',  2000);
+      initCounter('k-ameliorer', 'k-amel-ctr', 2000);
+    }, 100);
+  }
+
+  photos = [];
+  renderPhotos();
+  window.scrollTo(0,0);
+}
+
+function goBack(){
+  document.getElementById('landing').style.display   = 'block';
+  document.getElementById('form-page').style.display = 'none';
+  document.getElementById('success').style.display   = 'none';
+  document.getElementById('top-badge').textContent   = 'FORMULAIRES';
+  window.scrollTo(0,0);
+}
+function goHome(){ goBack(); }
+
+// ── SHOW ERROR ────────────────────────────────
+function showErr(msg){
+  var e = document.getElementById('f-err');
+  e.textContent = msg;
+  e.style.display = 'block';
+  e.scrollIntoView({behavior:'smooth', block:'nearest'});
+  setTimeout(function(){ e.style.display='none'; }, 5000);
+}
+
+// ── COLLECT AIRSTRIP ──────────────────────────
+function collectAirstrip(){
+  var d = {};
+  function g(id){ return (document.getElementById(id)||{}).value||''; }
+  d.numRapport = g('f-num'); d.date=g('f-date'); d.site=g('f-site').trim();
+  d.superviseur=g('f-sup').trim(); d.typeInterv=g('f-type');
+  d.arrImmat=g('f-arr-immat'); d.arrTrajet=g('f-arr-trajet'); d.arrHeure=g('f-arr-heure');
+  d.arrEquip=g('f-arr-equip'); d.arrPax=g('f-arr-pax'); d.arrTotal=g('f-arr-total');
+  d.arrObs=g('f-arr-obs');
+  d.depImmat=g('f-dep-immat'); d.depTrajet=g('f-dep-trajet'); d.depHeure=g('f-dep-heure');
+  d.depEquip=g('f-dep-equip'); d.depPax=g('f-dep-pax'); d.depTotal=g('f-dep-total');
+  d.depObs=g('f-dep-obs');
+  var pax=[];
+  for(var i=1;i<=8;i++){
+    var n=(document.getElementById('pax-nom-'+i)||{}).value||'';
+    if(n.trim()) pax.push({nom:n.trim(),statut:(document.getElementById('pax-stat-'+i)||{}).value||''});
+  }
+  d.passagers=pax;
+  var erts=[];
+  for(var j=1;j<=10;j++){
+    var en=(document.getElementById('ert-nom-'+j)||{}).value||'';
+    if(en.trim()) erts.push({nom:en.trim(),grade:g('ert-grade-'+j),heureArr:g('ert-arr-'+j),heureDep:g('ert-dep-'+j)});
+  }
+  d.equipeERT=erts;
+  d.sceneArr=g('f-scene-arr'); d.sceneDep=g('f-scene-dep');
+  var arrT=g('f-scene-arr'), depT=g('f-scene-dep');
+  if(arrT && depT){
+    var aa=arrT.split(':'), bb=depT.split(':');
+    var mins=(parseInt(bb[0])*60+parseInt(bb[1]))-(parseInt(aa[0])*60+parseInt(aa[1]));
+    if(mins<0) mins+=1440;
+    d.duree=Math.floor(mins/60)+'h '+('0'+mins%60).slice(-2)+'min';
+    var dEl=document.getElementById('f-duree'); if(dEl) dEl.value=d.duree;
+  } else { d.duree=g('f-duree'); }
+  d.situation=g('f-situation'); d.niveauAlerte=alertVal;
+  var mats=[];
+  for(var k=1;k<=8;k++){
+    var mn=(document.getElementById('mat-nom-'+k)||{}).value||'';
+    if(mn.trim()) mats.push({nom:mn.trim(),ref:g('mat-ref-'+k),qty:g('mat-qty-'+k),unite:g('mat-unit-'+k),etat:g('mat-etat-'+k)});
+  }
+  d.materiel=mats;
+  d.photos = photos.map(function(p){ return {name:p.name, dataURL:p.dataURL}; });
+  return d;
+}
+
+// ── COLLECT RPT ───────────────────────────────
+function collectRPT(){
+  function g(id){ return (document.getElementById(id)||{}).value||''; }
+  var rapport = g('r-rapport');
+  return {
+    nom:g('r-nom').trim(), statut:g('r-statut'), mat:g('r-mat').trim(),
+    zone:g('r-zone').trim(), numAct:g('r-numact').trim(),
+    actStatut:actStatus, hDebut:g('r-hdebut'), hFin:g('r-hfin'),
+    rapport:rapport, difficultes:g('r-difficultes'),
+    nbMotsRapport: rapport.trim() ? rapport.trim().split(/\s+/).length : 0
+  };
+}
+
+// ── COLLECT EXT ──────────────────────────────
+function collectEXT(){
+  function g(id){ return (document.getElementById(id)||{}).value||''; }
+  function getCheck(name){
+    var r = document.querySelector('input[name="'+name+'"]:checked');
+    return r ? r.value : '-';
+  }
+  return {
+    nom:g('e-nom').trim(), mat:g('e-mat').trim(), grade:g('e-grade'),
+    date:g('e-date'), zone:g('e-zone').trim(), serial:g('e-serial'),
+    type:g('e-type'), capacite:g('e-capacite'), fab:g('e-fab'), next:g('e-next'),
+    annee_fabrication:g('e-fab'), prochaine_revision:g('e-next'),
+    checklist:{
+      goupille_securite:   getCheck('ext-c1'),
+      manometre_zone_verte:getCheck('ext-c2'),
+      corps_sans_corrosion:getCheck('ext-c3'),
+      tuyau_lance_ok:      getCheck('ext-c4'),
+      etiquette_visible:   getCheck('ext-c5'),
+      support_fixation_ok: getCheck('ext-c6'),
+      accessible:          getCheck('ext-c7')
+    },
+    remarques:  g('e-remarques'),
+    ameliorer:  g('e-ameliorer'),
+    decision:   g('e-decision')||actStatus,
+    photos:     photos.map(function(p){ return {name:p.name, dataURL:p.dataURL}; })
+  };
+}
+
+// ── COLLECT KIT ───────────────────────────────
+function collectKIT(){
+  function g(id){ return (document.getElementById(id)||{}).value||''; }
+  function getCheck(name){
+    var r = document.querySelector('input[name="'+name+'"]:checked');
+    return r ? r.value : '-';
+  }
+  return {
+    nom:g('k-nom').trim(), mat:g('k-mat').trim(), grade:g('k-grade'),
+    date:g('k-date'), zone:g('k-zone').trim(), id:g('k-id'), type:g('k-type'),
+    id_kit:g('k-id'), checklist:{
+      pansements:       getCheck('kit-c1'),
+      compresses:       getCheck('kit-c2'),
+      bandes_gaze:      getCheck('kit-c3'),
+      antiseptique:     getCheck('kit-c4'),
+      gants_latex:      getCheck('kit-c5'),
+      ciseaux:          getCheck('kit-c6'),
+      masque_rcp:       getCheck('kit-c7'),
+      couverture_survie:getCheck('kit-c8')
+    },
+    remarques:  g('k-remarques'),
+    ameliorer:  g('k-ameliorer'),
+    decision:   g('k-decision')||actStatus,
+    photos:     photos.map(function(p){ return {name:p.name, dataURL:p.dataURL}; })
+  };
+}
+
+// ── VALIDATE ──────────────────────────────────
+function validate(){
+  if(currentForm === 'AIRSTRIP'){
+    var d = collectAirstrip();
+    if(!d.site)        return 'Site / Aerodrome obligatoire';
+    if(!d.superviseur) return 'Superviseur ERT obligatoire';
+    if(!d.typeInterv)  return 'Type intervention obligatoire';
+    if(!d.sceneArr)    return 'Heure arrivee sur scene obligatoire';
+    if(!d.sceneDep)    return 'Heure depart de la scene obligatoire';
+    if(!d.situation)   return 'Description de la situation obligatoire';
+    if(!alertVal)      return 'Selectionnez le niveau alerte';
+  }
+  if(currentForm === 'RPT'){
+    var r = collectRPT();
+    if(!r.nom)    return 'Votre nom est obligatoire';
+    if(!r.statut) return 'Selectionnez votre statut';
+    if(!r.zone)   return 'La zone est obligatoire';
+    if(!actStatus) return 'Selectionnez le statut activite';
+    if(!r.rapport || r.rapport.split(/\s+/).length < 3) return 'Rapport trop court (min 3 mots)';
+  }
+  if(currentForm === 'EXT'){
+    var e = collectEXT();
+    if(!e.nom)  return 'Votre nom est obligatoire';
+    if(!e.mat)  return 'Matricule obligatoire';
+    if(!e.zone) return 'Zone obligatoire';
+    if(!e.date) return 'Date inspection obligatoire';
+  }
+  if(currentForm === 'KIT'){
+    var k = collectKIT();
+    if(!k.nom)  return 'Votre nom est obligatoire';
+    if(!k.mat)  return 'Matricule obligatoire';
+    if(!k.zone) return 'Zone obligatoire';
+    if(!k.date) return 'Date inspection obligatoire';
+  }
+  return null;
+}
+
+// ── SUBMIT ────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  var btnSub = document.getElementById('btn-sub');
+  if(btnSub) btnSub.addEventListener('click', function(){
+    var err = validate();
+    if(err){ showErr(err); return; }
+    var btn = document.getElementById('btn-sub');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Envoi en cours...';
+    var collectMap = {AIRSTRIP:collectAirstrip, RPT:collectRPT, EXT:collectEXT, KIT:collectKIT};
+    var data = (collectMap[currentForm]||collectRPT)();
+    var refId  = currentForm + '-' + Date.now();
+    var nom    = currentForm === 'AIRSTRIP' ? data.superviseur : data.nom;
+    try{
+      if(currentForm === 'AIRSTRIP') localStorage.setItem('ert_me', JSON.stringify({site:data.site, sup:data.superviseur}));
+      if(currentForm === 'RPT')      localStorage.setItem('ert_me', JSON.stringify({nom:data.nom, statut:data.statut, mat:data.mat}));
+    }catch(e){}
+    var formLabels = {
+      AIRSTRIP:'Airstrip Report',
+      RPT:'Rapport Activite',
+      EXT:'Rapport Extincteur',
+      KIT:'Kit de Secours'
+    };
+    // Store last submitted data for PDF
+    window._lastSubmit = {formType:currentForm, data:data, nom:nom, refId:refId};
+    var record = {
+      id:        refId,
+      ts:        new Date().toLocaleString('fr'),
+      timestamp: new Date().toISOString(),
+      formType:  currentForm,
+      formLabel: formLabels[currentForm]||currentForm,
+      nom:       nom,
+      zone:      data.zone||data.site||'',
+      matricule: data.mat||data.matricule||'',
+      data:      data,
+      photos:    photos.map(function(p){ return {name:p.name, dataURL:p.dataURL}; }),
+      source:    'QR_FORM_ERT'
+    };
+    if(window._fbReady && window._fbPush){
+      window._fbPush(record)
+        .then(function(){ showSuccess(refId); })
+        .catch(function(){ saveLocal(record); showSuccess(refId, true); });
+    } else {
+      saveLocal(record); showSuccess(refId, true);
+    }
+  });
+});
+
+function saveLocal(r){
+  try{
+    var l = JSON.parse(localStorage.getItem('ert_offline')||'[]');
+    l.unshift(r); localStorage.setItem('ert_offline', JSON.stringify(l));
+  }catch(e){}
+}
+
+function showSuccess(refId, offline){
+  var cfgMap = {
+    AIRSTRIP:{ico:'&#9992;&#65039;',ttl:'Rapport Airstrip soumis !'},
+    RPT:     {ico:'&#128203;',       ttl:'Rapport Activite soumis !'},
+    EXT:     {ico:'&#129519;',       ttl:'Rapport Extincteur soumis !'},
+    KIT:     {ico:'&#129657;',       ttl:'Kit de Secours soumis !'}
+  };
+  var cfg = cfgMap[currentForm]||cfgMap.RPT;
+  document.getElementById('s-ico').innerHTML = cfg.ico;
+  document.getElementById('s-ttl').textContent = cfg.ttl;
+  document.getElementById('s-ref').textContent = 'REF: ' + refId;
+  document.getElementById('s-sub').textContent = offline
+    ? 'Sauvegarde localement. Firebase non disponible.'
+    : 'Transmis avec succes au Superviseur ERT.';
+  document.getElementById('form-page').style.display = 'none';
+  document.getElementById('success').style.display   = 'block';
+  window.scrollTo(0,0);
+}
+
+// ── ALERT/STATUS HANDLERS ─────────────────────
+function setAlertBtn(el){ setAlert(el.getAttribute('data-val')||''); }
+function setActStatusBtn(el){ setActStatus(el.getAttribute('data-val')||''); }
+
+// ── CHECKLIST RADIO PERSISTENCE ───────────────
+function pickCheck(name, val, clickedLabel){
+  document.querySelectorAll('input[name="'+name+'"]').forEach(function(inp){ inp.checked = false; });
+  var inp = clickedLabel ? clickedLabel.querySelector('input') : null;
+  if(inp) inp.checked = true;
+  var colors = {
+    OK:   ['rgba(30,132,73,.12)',  '#1E8449', '#1E8449'],
+    NON:  ['rgba(192,57,43,.1)',   '#C0392B', '#C0392B'],
+    VIDE: ['rgba(214,137,16,.1)',  '#D68910', '#D68910']
+  };
+  ['ok','non','vide'].forEach(function(v){
+    var lbl = document.getElementById('lbl-'+name+'-'+v);
+    if(!lbl) return;
+    if(v === val.toLowerCase()){
+      var c = colors[val]||colors.OK;
+      lbl.style.background   = c[0];
+      lbl.style.borderColor  = c[1];
+      lbl.style.color        = c[2];
+      lbl.style.fontWeight   = '700';
+    } else {
+      lbl.style.background  = '#F2F3F4';
+      lbl.style.borderColor = '#C5C8CA';
+      lbl.style.color       = '#555';
+      lbl.style.fontWeight  = '400';
+    }
+  });
+}
+
+// ── DECISION BUTTONS (EXT/KIT) ────────────────
+function setDecision(val, btnId, color){
+  ['dec-conforme','dec-surveiller','dec-remplacer','dec-complet','dec-incomplet','dec-reappro'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el){ el.style.background='#F2F3F4'; el.style.borderColor='#C5C8CA'; el.style.color='#555'; el.style.fontWeight='400'; }
+  });
+  var btn = document.getElementById(btnId);
+  if(btn){ btn.style.background=color+'22'; btn.style.borderColor=color; btn.style.color=color; btn.style.fontWeight='700'; }
+  var eD = document.getElementById('e-decision');
+  var kD = document.getElementById('k-decision');
+  if(eD) eD.value = val;
+  if(kD) kD.value = val;
+  actStatus = val;
+}
+
+// ── PHOTOS ────────────────────────────────────
+var photos = [];
+
+// Photo handling — event delegation so it works after form is rendered
+document.addEventListener('change', function(e){
+  if(e.target && e.target.id === 'f-photos'){
+    var files = Array.from(e.target.files).slice(0, 6 - photos.length);
+    files.forEach(function(file){
+      if(!file.type.startsWith('image/')) return;
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        var img = new Image();
+        img.onload = function(){
+          var MAX=1200, scale=Math.min(1,MAX/img.width,MAX/img.height);
+          var canvas=document.createElement('canvas');
+          canvas.width=Math.round(img.width*scale);
+          canvas.height=Math.round(img.height*scale);
+          canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+          photos.push({name:file.name, dataURL:canvas.toDataURL('image/jpeg',0.82)});
+          renderPhotos();
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+  }
+});
+
+function renderPhotos(){
+  var grid = document.getElementById('photo-grid');
+  if(!grid) return;
+  grid.innerHTML = photos.map(function(p,i){
+    return '<div class="pthumb"><img src="'+p.dataURL+'"><button class="pdel" onclick="delPhoto('+i+')">&#10005;</button></div>';
+  }).join('');
+}
+function delPhoto(i){ photos.splice(i,1); renderPhotos(); }
+
+// ── ONLINE/OFFLINE ────────────────────────────
+window.addEventListener('online',  function(){ document.getElementById('offline-bar').style.display='none'; });
+window.addEventListener('offline', function(){ document.getElementById('offline-bar').style.display='block'; });
+
+// ── PDF EXPORT (Agent side) ────────────────────────────────────────────────
+var AGENT_LOGO = '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';
+
+function exportFormPDF(lang){
+  lang = lang || 'fr';
+  if(typeof window.jspdf === 'undefined'){
+    // Try loading jsPDF dynamically
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    s.onload=function(){ exportFormPDF(lang); };
+    document.head.appendChild(s); return;
+  }
+  // Use stored data if available (post-submit), else collect current form
+  var useStored = window._lastSubmit && document.getElementById('success') && document.getElementById('success').style.display !== 'none';
+  var ft = useStored ? window._lastSubmit.formType : currentForm;
+  if(!ft){ alert('Aucun formulaire disponible.'); return; }
+  var doc = new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var W=210, M=14;
+  var TEAL=[9,84,77],TEAL2=[10,107,99],LIME=[192,208,105],LIME_DK=[143,160,64];
+  var CREAM=[242,243,244],WHITE=[255,255,255],DARK=[28,40,51],GREY=[85,85,85],GREY_L=[136,136,136];
+  var GREEN=[30,132,73],RED=[192,57,43],ORANGE=[214,137,16],BLUE=[31,97,141];
+  var isEN = lang==='en';
+  var ft = currentForm;
+  var fColors={AIRSTRIP:BLUE, RPT:[142,68,173], EXT:[192,57,43], KIT:[39,174,96]};
+  var fColor = fColors[ft]||TEAL;
+
+  function fr2(x,y,w,h,c){doc.setFillColor(c[0],c[1],c[2]);doc.rect(x,y,w,h,'F');}
+  function sf2(sz,st,c){doc.setFontSize(sz);doc.setFont('helvetica',st||'normal');doc.setTextColor(c[0],c[1],c[2]);}
+
+  var y = 0;
+  fr2(0,0,W,32,TEAL); fr2(0,31,W,1.5,LIME_DK);
+  try{doc.addImage('data:image/jpeg;base64,'+AGENT_LOGO,'JPEG',M,5,22,22);}catch(e){}
+  sf2(15,'bold',LIME); doc.text('ERT RESCUE MINE',M+26,13);
+  sf2(8,'normal',WHITE); doc.text(isEN?'Emergency Response Team Report':'Emergency Response Team - Rapport',M+26,19);
+  sf2(6,'normal',GREY_L); doc.text(isEN?'Confidential - Internal use only':'Document confidentiel - Usage interne',M+26,25);
+  fr2(W-M-30,6,30,12,fColor);
+  sf2(8,'bold',WHITE); doc.text(ft,W-M-15,13,{align:'center'});
+  sf2(6,'normal',GREY_L); doc.text((isEN?'Generated on ':'Genere le ')+new Date().toLocaleString(isEN?'en-US':'fr'),W-M,29,{align:'right'});
+  y=36;
+  var formLabel = ft==='AIRSTRIP'?(isEN?'AIRSTRIP REPORT':'RAPPORT AIRSTRIP'):(isEN?'ACTIVITY REPORT':'RAPPORT ACTIVITE');
+  fr2(M,y,W-M*2,10,fColor);
+  sf2(10,'bold',WHITE); doc.text(formLabel,M+4,y+7);
+  y+=13;
+
+  var d;
+  if(useStored){
+    d = window._lastSubmit.data;
+  } else {
+    var collectMap2={AIRSTRIP:collectAirstrip,RPT:collectRPT,EXT:collectEXT,KIT:collectKIT};
+    d = (collectMap2[ft]||collectRPT)();
+  }
+  // Use stored photos if available
+  var pdfPhotos = (useStored && window._lastSubmit.data && window._lastSubmit.data.photos) ? window._lastSubmit.data.photos : photos;
+
+  function newPageIfNeeded(needed){ if(y+needed>278){doc.addPage();y=16;} }
+  function secT(ttl,yy){ fr2(M,yy,W-M*2,7,TEAL); sf2(7.5,'bold',LIME); doc.text(ttl.toUpperCase(),M+3,yy+5); return yy+9; }
+  function fGrid(pairs,yy){
+    var w2=(W-M*2)/2;
+    for(var ri=0;ri<Math.ceil(pairs.length/2);ri++){
+      if(yy>272){doc.addPage();yy=16;}
+      for(var ci=0;ci<2;ci++){
+        var p2=pairs[ri*2+ci]; if(!p2) continue;
+        var cx=M+ci*w2;
+        fr2(cx,yy,w2-.5,10,ci===0?CREAM:WHITE);
+        doc.setDrawColor(LIME_DK[0],LIME_DK[1],LIME_DK[2]);doc.setLineWidth(.2);doc.rect(cx,yy,w2-.5,10);
+        sf2(5.5,'bold',GREY_L);doc.text(String(p2[0]||'').toUpperCase().substring(0,28),cx+2,yy+4);
+        sf2(7.5,'bold',TEAL);doc.text(String(p2[1]||'-').substring(0,26),cx+2,yy+9);
+      }
+      yy+=11;
+    }
+    return yy;
+  }
+  function lTxt(label,text,yy,bc){
+    if(!text||!text.trim()) return yy;
+    if(yy>260){doc.addPage();yy=16;}
+    fr2(M,yy,W-M*2,7,bc||TEAL); sf2(7.5,'bold',WHITE); doc.text(label.toUpperCase(),M+3,yy+5); yy+=8;
+    var lines=doc.splitTextToSize(text,W-M*2-6);
+    var lpp=Math.floor((272-yy)/5),chunk=lines.slice(0,lpp);
+    fr2(M,yy,W-M*2,chunk.length*5+6,CREAM);
+    doc.setDrawColor(bc[0],bc[1],bc[2]);doc.setLineWidth(.5);doc.line(M,yy,M,yy+chunk.length*5+6);
+    sf2(7,'normal',DARK);doc.text(chunk,M+4,yy+4,{lineHeightFactor:1.4});
+    yy+=chunk.length*5+8;
+    if(lines.length>lpp){
+      doc.addPage();yy=16;
+      var rem=lines.slice(lpp,lpp+Math.floor((272-yy)/5));
+      fr2(M,yy,W-M*2,rem.length*5+6,CREAM);doc.line(M,yy,M,yy+rem.length*5+6);
+      doc.text(rem,M+4,yy+4,{lineHeightFactor:1.4});yy+=rem.length*5+8;
+    }
+    return yy;
+  }
+
+  if(ft==='AIRSTRIP'){
+    y=secT(isEN?'General Information':'Informations Generales',y);
+    y=fGrid([[isEN?'Site/Aerodrome':'Site / Aerodrome',d.site],[isEN?'ERT Supervisor':'Superviseur ERT',d.superviseur],[isEN?'Type':'Type intervention',d.typeInterv],[isEN?'Report N':'N Rapport',d.numRapport]],y);
+    y+=3; y=secT(isEN?'Aircraft Arrival':'Arrivee Aeronef',y);
+    y=fGrid([[isEN?'Registration':'Immatriculation',d.arrImmat],[isEN?'Route':'Trajet',d.arrTrajet],[isEN?'Time':'Heure',d.arrHeure],[isEN?'Crew':'Equipage',d.arrEquip],[isEN?'Passengers':'Passagers',d.arrPax],[isEN?'Total on board':'Total a bord',d.arrTotal]],y);
+    if(d.arrObs) y=lTxt(isEN?'Arrival Observations':'Observations Arrivee',d.arrObs,y,GREEN);
+    y+=3; y=secT(isEN?'Aircraft Departure':'Depart Aeronef',y);
+    y=fGrid([[isEN?'Registration':'Immatriculation',d.depImmat],[isEN?'Route':'Trajet',d.depTrajet],[isEN?'Time':'Heure',d.depHeure],[isEN?'Crew':'Equipage',d.depEquip],[isEN?'Passengers':'Passagers',d.depPax],[isEN?'Total on board':'Total a bord',d.depTotal]],y);
+    if(d.depObs) y=lTxt(isEN?'Departure Observations':'Observations Depart',d.depObs,y,BLUE);
+    if(d.passagers&&d.passagers.length){
+      y+=3; y=secT((isEN?'Passengers (':'Passagers (')+d.passagers.length+')',y);
+      d.passagers.forEach(function(p,pi){
+        if(y>272){doc.addPage();y=16;}
+        fr2(M,y,W-M*2,8,pi%2===0?CREAM:WHITE);
+        doc.setDrawColor(LIME_DK[0],LIME_DK[1],LIME_DK[2]);doc.setLineWidth(.2);doc.rect(M,y,W-M*2,8);
+        sf2(7,'bold',TEAL);doc.text(String(pi+1)+'.',M+2,y+5.5);
+        sf2(7,'normal',DARK);doc.text(p.nom,M+8,y+5.5,{maxWidth:130});
+        sf2(6.5,'normal',GREY);doc.text(p.statut||'',W-M-25,y+5.5);
+        y+=9;
+      });
+    }
+    if(d.equipeERT&&d.equipeERT.length){
+      y+=3; y=secT((isEN?'ERT Team (':'Equipe ERT (')+d.equipeERT.length+')',y);
+      fr2(M,y,W-M*2,7,TEAL2);sf2(6,'bold',LIME);
+      var eH=isEN?['Name','Grade/Function','Arrival','Departure']:['Nom','Grade/Fonction','H.Arrivee','H.Depart'];
+      [0,55,105,145].forEach(function(ox,hi){doc.text(eH[hi],M+ox+2,y+5);});
+      y+=8;
+      d.equipeERT.forEach(function(ag,ai){
+        if(y>272){doc.addPage();y=16;}
+        fr2(M,y,W-M*2,8,ai%2===0?CREAM:WHITE);
+        doc.setDrawColor(LIME_DK[0],LIME_DK[1],LIME_DK[2]);doc.setLineWidth(.2);doc.rect(M,y,W-M*2,8);
+        sf2(7,'normal',DARK);
+        doc.text(String(ai+1)+'. '+ag.nom,M+1,y+5.5,{maxWidth:52});
+        doc.text(ag.grade||'-',M+57,y+5.5,{maxWidth:46});
+        doc.text(ag.heureArr||'-',M+107,y+5.5);
+        doc.text(ag.heureDep||'-',M+147,y+5.5);
+        y+=9;
+      });
+    }
+    y+=3;
+    y=fGrid([[isEN?'Scene arrival':'Arrivee scene',d.sceneArr],[isEN?'Scene departure':'Depart scene',d.sceneDep],[isEN?'Duration':'Duree',d.duree],[isEN?'Alert level':'Niveau alerte',d.niveauAlerte]],y);
+    y=lTxt(isEN?'Situation Description':'Description Situation',d.situation,y,TEAL);
+    if(d.materiel&&d.materiel.length){
+      y+=3; y=secT((isEN?'Equipment Used (':'Materiel Utilise (')+d.materiel.length+')',y);
+      fr2(M,y,W-M*2,7,TEAL2);sf2(6,'bold',LIME);
+      var mH=isEN?['Designation','Ref/ID','Qty','Unit','Condition']:['Designation','Ref/ID','Qte','Unite','Etat'];
+      [0,65,105,119,133].forEach(function(ox,hi){doc.text(mH[hi],M+ox+1,y+5);});
+      y+=8;
+      d.materiel.forEach(function(mt,mi){
+        if(y>272){doc.addPage();y=16;}
+        fr2(M,y,W-M*2,8,mi%2===0?CREAM:WHITE);
+        doc.setDrawColor(LIME_DK[0],LIME_DK[1],LIME_DK[2]);doc.setLineWidth(.2);doc.rect(M,y,W-M*2,8);
+        sf2(7,'normal',DARK);
+        doc.text(String(mt.nom||'').substring(0,26),M+1,y+5.5);
+        doc.text(String(mt.ref||'-').substring(0,14),M+66,y+5.5);
+        doc.text(String(mt.qty||'-'),M+106,y+5.5);
+        doc.text(String(mt.unite||'-'),M+120,y+5.5);
+        doc.text(String(mt.etat||'-').substring(0,16),M+134,y+5.5);
+        y+=9;
+      });
+    }
+  } else if(ft==='EXT'||ft==='KIT'){
+    var isEXT = ft==='EXT';
+    y=secT(isEN?'Agent Identification':'Identification Agent',y);
+    y=fGrid([[isEN?'Name':'Nom',d.nom],[isEN?'Badge':'Matricule',d.mat],[isEN?'Grade':'Grade',d.grade],[isEN?'Zone':'Zone',d.zone],[isEN?'Date':'Date',d.date]],y);
+    if(isEXT){
+      y+=3; y=secT(isEN?'Equipment Details':'Details Equipement',y);
+      y=fGrid([[isEN?'Serial N':'N Serie',d.serial],[isEN?'Type':'Type',d.type],[isEN?'Capacity':'Capacite',d.capacite],[isEN?'Manuf. date':'Date fabr.',d.fab],[isEN?'Next revision':'Prochaine revision',d.next]],y);
+      y+=3; y=secT(isEN?'Inspection Checklist':'Check-list Inspection',y);
+      var extItems=isEN?[['Safety pin',d.checks.goupille],['Gauge (green zone)',d.checks.manometre],['Body (no damage)',d.checks.corps],['Hose/nozzle OK',d.checks.tuyau],['Label visible',d.checks.etiquette],['Mounting OK',d.checks.support],['Accessible',d.checks.accessible]]
+        :[['Goupille securite',d.checks.goupille],['Manometre zone verte',d.checks.manometre],['Corps sans corrosion',d.checks.corps],['Tuyau / lance OK',d.checks.tuyau],['Etiquette visible',d.checks.etiquette],['Support fixation OK',d.checks.support],['Accessible',d.checks.accessible]];
+    } else {
+      y+=3; y=secT(isEN?'Kit Details':'Details Kit',y);
+      y=fGrid([[isEN?'Kit ID':'ID Kit',d.id],[isEN?'Type':'Type',d.type]],y);
+      y+=3; y=secT(isEN?'Content Checklist':'Check-list Contenu',y);
+      var extItems=isEN?[['Assorted bandages',d.checks.pansements],['Sterile gauze',d.checks.compresses],['Bandage rolls',d.checks.bandes],['Antiseptic',d.checks.antiseptique],['Latex gloves',d.checks.gants],['Medical scissors',d.checks.ciseaux],['Pocket mask',d.checks.masque],['Survival blanket',d.checks.couverture]]
+        :[['Pansements assortis',d.checks.pansements],['Compresses steriles',d.checks.compresses],['Bandes de gaze',d.checks.bandes],['Antiseptique',d.checks.antiseptique],['Gants jetables',d.checks.gants],['Ciseaux medicaux',d.checks.ciseaux],['Masque bouche-a-bouche',d.checks.masque],['Couverture survie',d.checks.couverture]];
+    }
+    // Draw checklist as table
+    var statusColors={OK:GREEN, NON:RED, VIDE:ORANGE, '-':GREY};
+    extItems.forEach(function(item,ii){
+      if(y>272){doc.addPage();y=16;}
+      fr2(M,y,W-M*2,9,ii%2===0?CREAM:WHITE);
+      doc.setDrawColor(LIME_DK[0],LIME_DK[1],LIME_DK[2]);doc.setLineWidth(.2);doc.rect(M,y,W-M*2,9);
+      sf2(7,'normal',DARK); doc.text(item[0],M+3,y+6);
+      var sc = statusColors[item[1]]||GREY;
+      fr2(W-M-20,y+1,18,7,sc);
+      sf2(7,'bold',WHITE); doc.text(String(item[1]||'-'),W-M-11,y+6,{align:'center'});
+      y+=10;
+    });
+    y+=5;
+    if(d.decision){
+      var decColor = (d.decision==='Conforme'||d.decision==='Complet')?GREEN:(d.decision.indexOf('remplacer')>=0||d.decision==='Incomplet')?RED:ORANGE;
+      fr2(M,y,W-M*2,12,decColor);
+      sf2(10,'bold',WHITE); doc.text((isEN?'Decision: ':'Decision : ')+d.decision,M+4,y+8);
+      y+=15;
+    }
+    if(d.remarques) y=lTxt(isEN?'Remarks':'Remarques',d.remarques,y,fColor);
+    if(d.ameliorer) y=lTxt(isEN?'Improvement points':'Points a ameliorer',d.ameliorer,y,ORANGE);
+  } else if(ft==='EXT'||ft==='KIT'){
+    var isEXT2=ft==='EXT'; var fC2=isEXT2?RED:GREEN;
+    y=secT(isEN?'Agent Identification':'Identification Agent',fC2);
+    y=fGrid([[isEN?'Name':'Nom',d.nom],[isEN?'Badge':'Matricule',d.mat],[isEN?'Grade':'Grade',d.grade],[isEN?'Zone':'Zone',d.zone],[isEN?'Date':'Date',d.date]],y);
+    y+=3;
+    if(isEXT2){
+      y=secT(isEN?'Equipment Details':'Details Equipement',fC2);
+      y=fGrid([[isEN?'Serial N':'N Serie',d.serial],[isEN?'Type':'Type',d.type],[isEN?'Capacity':'Capacite',d.capacite],[isEN?'Manufacturing year':'Annee fabrication',d.annee_fabrication],[isEN?'Next revision':'Prochaine revision',d.prochaine_revision]],y);
+      y+=3;
+      if(d.checklist){
+        y=secT(isEN?'Inspection Checklist':'Check-list Inspection',fC2);
+        var eLabels={goupille_securite:isEN?'Safety pin':'Goupille securite',manometre_zone_verte:isEN?'Gauge green zone':'Manometre zone verte',corps_sans_corrosion:isEN?'Body no damage':'Corps sans corrosion',tuyau_lance_ok:isEN?'Hose/nozzle OK':'Tuyau lance OK',etiquette_visible:isEN?'Label visible':'Etiquette visible',support_fixation_ok:isEN?'Mounting OK':'Support fixation OK',accessible:isEN?'Accessible':'Accessible'};
+        Object.keys(d.checklist).forEach(function(k,ii){
+          newPageIfNeeded(9);
+          var val=d.checklist[k]||'-'; var vc={OK:GREEN,NON:RED,VIDE:ORANGE}[val]||GREY;
+          fr2(M,y,W-M*2,8.5,ii%2===0?CREAM:WHITE);
+          doc.setDrawColor(LIME_DK[0],LIME_DK[1],LIME_DK[2]);doc.setLineWidth(.2);doc.rect(M,y,W-M*2,8.5);
+          sf2(7,'normal',DARK);doc.text(eLabels[k]||k,M+3,y+5.5,{maxWidth:140});
+          fr2(W-M-22,y+1,20,6.5,vc);sf2(6.5,'bold',WHITE);doc.text(val,W-M-12,y+5.5,{align:'center'});
+          y+=9;
+        });
+        y+=3;
+      }
+    } else {
+      y=secT(isEN?'Kit Identification':'Identification Kit',fC2);
+      y=fGrid([[isEN?'Kit ID':'ID Kit',d.id_kit],[isEN?'Type':'Type',d.type]],y);
+      y+=3;
+      if(d.checklist){
+        y=secT(isEN?'Kit Content':'Contenu Kit',fC2);
+        var kLabels={pansements:isEN?'Bandages':'Pansements',compresses:isEN?'Sterile gauze':'Compresses',bandes_gaze:isEN?'Bandage rolls':'Bandes gaze',antiseptique:isEN?'Antiseptic':'Antiseptique',gants_latex:isEN?'Latex gloves':'Gants latex',ciseaux:isEN?'Scissors':'Ciseaux',masque_rcp:isEN?'Pocket mask':'Masque RCP',couverture_survie:isEN?'Survival blanket':'Couverture survie'};
+        Object.keys(d.checklist).forEach(function(k,ii){
+          newPageIfNeeded(9);
+          var val=d.checklist[k]||'-'; var vc={OK:GREEN,NON:RED,VIDE:ORANGE}[val]||GREY;
+          fr2(M,y,W-M*2,8.5,ii%2===0?CREAM:WHITE);
+          doc.setDrawColor(LIME_DK[0],LIME_DK[1],LIME_DK[2]);doc.setLineWidth(.2);doc.rect(M,y,W-M*2,8.5);
+          sf2(7,'normal',DARK);doc.text(kLabels[k]||k,M+3,y+5.5,{maxWidth:140});
+          fr2(W-M-22,y+1,20,6.5,vc);sf2(6.5,'bold',WHITE);doc.text(val,W-M-12,y+5.5,{align:'center'});
+          y+=9;
+        });
+        y+=3;
+      }
+    }
+    // Decision banner
+    if(d.decision){
+      newPageIfNeeded(16);
+      var decC={'Conforme':GREEN,'Complet':GREEN,'A surveiller':ORANGE,'Incomplet':ORANGE,'A remplacer':RED,'A reapprovisionner':RED}[d.decision]||TEAL;
+      fr2(M,y,W-M*2,14,decC);sf2(11,'bold',WHITE);
+      doc.text((isEN?'DECISION: ':'DECISION : ')+d.decision.toUpperCase(),W/2,y+9,{align:'center'});
+      y+=17;
+    }
+    y=lTxt(isEN?'Remarks':'Remarques',d.remarques,y,fC2);
+    y=lTxt(isEN?'Improvement points':'Points a ameliorer',d.ameliorer,y,ORANGE);
+  } else {
+    y=secT(isEN?'Agent Identification':'Identification Agent',y);
+    y=fGrid([[isEN?'Name':'Nom',d.nom],[isEN?'Status':'Statut',d.statut],[isEN?'Badge':'Matricule',d.mat],[isEN?'Zone':'Zone',d.zone],[isEN?'Activity N':'N Activite',d.numAct],[isEN?'Activity status':'Statut activite',d.actStatut]],y);
+    y=fGrid([[isEN?'Start time':'Heure debut',d.hDebut],[isEN?'End time':'Heure fin',d.hFin]],y);
+    if(d.rapport) y=lTxt(isEN?'Detailed Report ('+d.nbMotsRapport+' words)':'Rapport Detaille ('+d.nbMotsRapport+' mots)',d.rapport,y,TEAL);
+    if(d.difficultes) y=lTxt(isEN?'Areas for Improvement':'Points a ameliorer',d.difficultes,y,ORANGE);
+  }
+
+  // Add photos if present
+  if(pdfPhotos && pdfPhotos.length > 0){
+    y+=5;
+    if(y>250){doc.addPage();y=16;}
+    fr2(M,y,W-M*2,8,TEAL);
+    sf2(8,'bold',LIME); doc.text((isEN?'PHOTOS (':'PHOTOS (')+pdfPhotos.length+')',M+3,y+5.5);
+    y+=10;
+    var photoW=55, photoH=45, photoX=M, photosPerRow=3;
+    pdfPhotos.forEach(function(ph,pi){
+      if(y+photoH>280){doc.addPage();y=16;}
+      try{
+        doc.addImage(ph.dataURL,'JPEG',photoX,y,photoW,photoH);
+        sf2(5.5,'normal',GREY_L);
+        doc.text('Photo '+(pi+1),photoX+photoW/2,y+photoH+4,{align:'center'});
+      }catch(e){}
+      photoX += photoW + 6;
+      if((pi+1)%photosPerRow===0){ photoX=M; y+=photoH+10; }
+    });
+    if(pdfPhotos.length%photosPerRow!==0) y+=photoH+10;
+  }
+
+  var tp=doc.getNumberOfPages();
+  for(var p=1;p<=tp;p++){
+    doc.setPage(p);
+    fr2(0,286,W,11,TEAL);fr2(0,285.5,W,1,LIME_DK);
+    sf2(5.5,'normal',GREY_L);
+    doc.text(isEN?'ERT Rescue Mine | Supervisor KCM | Confidential':'ERT Rescue Mine | Superviseur KCM | Confidentiel',M,291);
+    sf2(5.5,'bold',LIME);
+    doc.text((isEN?'Page ':'Page ')+p+'/'+tp,W-M,291,{align:'right'});
+  }
+  var fname=(isEN?'Report_':'Rapport_')+ft+'_'+lang.toUpperCase()+'_'+new Date().toLocaleDateString('fr').replace(/\//g,'-')+'.pdf';
+  doc.save(fname);
+}
+
+</script>
+</body>
+</html>
